@@ -1,0 +1,143 @@
+<style>
+.menu{border-right:1px solid #efefef;width:8em;box-sizing:border-box}
+.menu ol{margin:0;padding:0;list-style:none;box-sizing:border-box}
+.menu li{box-sizing:border-box}
+.menu button{border:0;background:none}
+.menu nav{display:flex;flex-direction:column}
+.menu nav:empty{display:none}
+.menu nav i{display:inline-block;padding:0 .5rem;width:1.5rem;height:2.5rem;vertical-align:top}
+.menu nav button{display:flex;align-items:center;height:2.5em;text-align:left;white-space:nowrap;overflow:hidden}
+.menu nav button:hover{background: #33405d;color: #fff}
+.menu .curr{display:flex;align-items:center}
+.menu .curr button[name=sess]{flex:auto;padding:0 0 0 .3em;text-align:left}
+.menu .curr button[name=menu]{font-size:1rem}
+.menu .curr i{width:2em;height:2em}
+.menu .curr .msg-alert::before{content:"";position:absolute;margin:1.2em;border-radius:1em;width:.8em;height:.8em;background:#f30}
+.menu .sess{}
+.menu .msg{position:absolute;padding:1.5em 0 0 0;border:1px solid #ccc;width:100%;max-width:20em;min-height:10em;background:#fff;overflow:auto}
+.menu .msg li{border-top:1px solid #efefef}
+.menu .msg p{margin:0}
+.menu .msg p:last-child{text-align:right}
+.menu .msg button{display:flex;align-items:center;padding:0}
+.menu .msg button span{padding:0 .3em}
+.menu .msg button i{width:1.5em;height:1.5em;font-size:1rem}
+.menu .msg .head{position:absolute;display:flex;top:0;width:100%}
+.menu .msg .head span{flex:auto;background:#f7f7f7;text-align:center}
+.menu .svg-home{content:url('https://api.iconify.design/mdi-light/home.svg?color=%23555')}
+.menu .svg-alert{content:url('https://api.iconify.design/fluent/alert-urgent-24-regular.svg?color=%23555')}
+.menu .svg-accounts{content:url('https://api.iconify.design/fa-regular/address-card.svg?color=%23555')}
+.menu .svg-ranks{content:url('https://api.iconify.design/material-symbols/auto-graph-rounded.svg?color=%23555')}
+.menu .svg-history{content:url('https://api.iconify.design/icon-park-outline/log.svg?color=%23555')}
+</style>
+<div class="menu">
+	<div class="curr">
+		<button name="menu" @click="msgVis=!msgVis" :class="msgAlert"><i class="svg-alert"></i></button>
+		<button name="sess" @click="sessVis=!sessVis">{{id}}</button>
+	</div>
+	<div>
+		<div class="sess" v-if="sessVis">
+			<button @click="signout">로그아웃</button>
+		</div>
+		<ol class="msg" v-if="msgVis">
+			<li class="head">
+				<span>알림</span>
+				<button @click="sync"><span>새로고침</span> <i class="svg-rr"></i></button>
+				<button @click="msgClose"><span>확인</span> <i class="svg-chk"></i></button>
+				<button @click="msgVis=false"><i class="svg-cls"></i></button>
+			</li>
+			<li v-for="a in msg">
+				<template v-if="a.type=='TICKET-ORDER'">
+					<p>&nbsp;{{a.id}}계정에서 <i :class="a.name"></i> {{a.cnt}}개 신규 요청</p>
+					<p>
+						<span>{{a.time}}</span>&nbsp;
+						<label>읽음 <input type="checkbox" :disabled="a.yn==0" v-model="a.ok"></label>
+					</p>
+				</template>
+				<template v-if="a.type=='TICKET-UPDATE'">
+					<p>&nbsp;{{a.id}}계정에서 <i :class="a.name"></i> {{a.cnt}}개 기간연장 요청</p>
+					<p>
+						<span>{{a.time}}</span>&nbsp;
+						<label>읽음 <input type="checkbox" :disabled="a.yn==0" v-model="a.ok"></label>
+					</p>
+				</template>
+			</li>
+		</ol>
+	</div>
+	<nav>
+		<button v-for="[key,value] in menu" @click="move(key)"><i :class="`svg-${key}`"></i><span>{{value}}</span></button>
+	</nav>
+</div>
+<script type="module">
+import {local,signal,ref} from '/env.mjs'
+
+const app=local.app
+const menu=ref(new Map())
+const msg=ref([])
+const msgAlert=ref("")
+const sessVis=ref(false)
+const msgVis=ref(false)
+
+signal.get("menu")({
+	setup(){
+		return {
+			timer:null,
+			id:app.userId,
+			menu,msg,msgAlert,sessVis,msgVis
+		}
+	},
+	methods:{
+		async reload(){
+			var {menu:menu2,msg}=await app.xget("/aside")
+			menu.value=new Map(menu2)
+			this.setMsg(msg)
+		},
+		async sync(){
+			var {code,msg}=await app.xget("/aside?alert=1")
+			if(code==200){
+				this.setMsg(msg)
+			}else{
+				app.mounted()
+			}
+		},
+		setMsg(rows){
+			msg.value=rows.reduce((a,r)=>(a.push({time:r[0],id:r[1],type:r[2],name:r[3],cnt:r[4],yn:r[5],ok:false}),a),[])
+
+			for(var r of msg.value){
+				if(r.yn){
+					msgAlert.value='msg-alert'
+					return
+				}
+			}
+
+			msgAlert.value=''
+		},
+		async msgClose(){
+			var time=[]
+			for(var row of msg.value)
+			if(row.ok){
+				time.push(row.time)
+			}
+			if(time.length){
+				await app.xpost("/aside/msg/read",{time})
+				await this.sync()
+			}
+		},
+		async signout(){
+			await app.xget("/signout")
+			app.mounted()
+		},
+		async move(id){
+			app.loadMain(id)
+		}
+	},
+	mounted(){
+		this.reload()
+		this.timer=setInterval(a=>{
+			this.sync()
+		},30000)
+	},
+	unmounted(){
+		clearInterval(this.timer)
+	}
+})
+</script>

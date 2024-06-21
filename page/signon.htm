@@ -1,0 +1,107 @@
+<style>
+.signon{height:100%;background:radial-gradient(circle,#00efff 0%,#009fff 100%)}
+.signon form{
+	position:absolute;top:0;right:0;bottom:0;left:0;max-width:20em;max-height:fit-content;
+	margin:auto;padding:2em;color:#333
+}
+.signon form .txt h1{text-align:center;color:#eee;font-size:2rem}
+.signon form .txt{margin:-3em 0 1em 0;position:relative}
+.signon form .txt .svg{margin:auto;position:absolute;top:0;left:0em;bottom:0;width:6em;height:6em}
+.signon form input{margin:.5em 0;padding:0 0 0 .5em;border:1px solid #ccc;border-bottom:1px solid #ddd;height:2.5rem;background:#fff;border-radius:.5rem}
+.signon form [type=submit]{color:#ccc;background:#003fff}
+.signon form button,
+.signon form .btn{border:1px solid #777;border:0;border-radius:.5em;height:2.5rem}
+.signon form .btn{text-align:center}
+.signon form label,form .a{display:flex;flex-direction:column}
+.signon form label{position:relative}
+.signon form label span{padding:.5em 0 0 0;font-size:.8em}
+.signon form label .svg{padding:0 0 0 .5em;border-left:1px solid #ccc;position:absolute;right:.5em;bottom:1em;width:1.5em;height:1.5em}
+.signon form label.err span{text-decoration:underline}
+.signon form label.err input{background:#fee}
+.signon form .msg{min-height:.5em}
+.signon form .cancel{margin:.5em 0 0 0}
+.signon form .ic-logo{content:url('https://api.iconify.design/meteocons/cloud-up-fill.svg')}
+.signon form .ic-person{content:url('https://api.iconify.design/ic/sharp-person.svg?color=%23666')}
+.signon form .ic-lock{content:url('https://api.iconify.design/streamline/interface-login-password-lock-login-padlock-password-secure-security-textbox-type.svg?color=%23666')}
+.signon form .ic-code{content:url('https://api.iconify.design/pepicons-print/ticket.svg?color=%23666')}
+.g-recaptcha>div{margin:.5em auto}
+</style>
+<div class="signon">
+	<form v-on:submit.prevent="submit">
+		<div class="txt">
+			<i class="svg ic-logo"></i>
+			<h1>C Rank</h1>
+		</div>
+		<label>
+			<span>아이디</span>
+			<input autofocus v-model="id">
+			<i class="svg ic-person"></i>
+		</label>
+		<label :class="pwErr">
+			<span>패스워드</span>
+			<input type="password" v-model="pw">
+			<i class="svg ic-lock"></i>
+		</label>
+		<label :class="pwErr">
+			<span>패스워드 확인</span>
+			<input type="password" v-model="pw2">
+			<i class="svg ic-lock"></i>
+		</label>
+		<label>
+			<span>가입코드</span>
+			<input v-model="scode">
+			<i class="svg ic-code"></i>
+		</label>
+		<div class="msg">{{message}}</div>
+		<div class="a">
+			<button type="submit">가입</button>
+			<button class="btn cancel" type="button" @click="signin">취소</button>
+		</div>
+	</form>
+</div>
+<script type="module">
+import {local,signal,ref} from '/env.mjs'
+
+const app=local.app
+const id=ref("")
+const pw=ref("")
+const pw2=ref("")
+const pwErr=ref("")
+const scode=ref("")
+const message=ref("")
+
+signal.get("signon")({
+	setup(){
+		return {id,pw,pw2,pwErr,scode,message}
+	},
+	methods:{
+		async submit(){
+			if(pw.value!=pw2.value){
+				pwErr.value="err"
+				return
+			}
+			if(!id.value||!scode.value){
+				return
+			}
+			pwErr.value=""
+
+			message.value="처리중 .."
+
+			var {code}=await app.xpost("/signon",{
+				id:id.value,
+				pw:pw.value,
+				code:scode.value
+			})
+			if(code==200){
+				message.value="로딩중 .."
+				await app.mounted()
+			}else{
+				message.value="아이디를 등록하지 못하였습니다."
+			}
+		},
+		async signin(){
+			app.loadMain("signin")
+		}
+	}
+})
+</script>

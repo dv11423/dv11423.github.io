@@ -1,0 +1,85 @@
+<style>
+.signin{height:100%;background:radial-gradient(circle,#00efff 0%,#009fff 100%)}
+.signin form{
+	position:absolute;top:0;right:0;bottom:0;left:0;max-width:20em;max-height:fit-content;
+	margin:auto;padding:2em;color:#333
+}
+.signin form .txt h1{text-align:center;color:#eee;font-size:2rem}
+.signin form .txt{margin:-3em 0 1em 0;position:relative}
+.signin form .txt .svg{margin:auto;position:absolute;top:0;left:0em;bottom:0;width:6em;height:6em}
+.signin form input{margin:.5em 0;padding:0 0 0 .5em;border:1px solid #ccc;border-bottom:1px solid #ddd;height:2.5rem;background:#fff;border-radius:.5rem}
+.signin form [type=submit]{color:#ccc;background:#003fff}
+.signin form button,
+.signin form .btn{border:1px solid #777;border:0;border-radius:.5em;height:2.5rem}
+.signin form .btn{text-align:center}
+.signin form label,form .a{display:flex;flex-direction:column}
+.signin form label{position:relative}
+.signin form label span{padding:.5em 0 0 0;font-size:.8em}
+.signin form label .svg{padding:0 0 0 .5em;border-left:1px solid #ccc;position:absolute;right:.5em;bottom:1em;width:1.5em;height:1.5em}
+.signin form .msg{min-height:.5em}
+.signin form .signup{margin:.5em 0 0 0}
+.signin form .ic-logo{content:url('https://api.iconify.design/meteocons/cloud-up-fill.svg')}
+.signin form .ic-person{content:url('https://api.iconify.design/ic/sharp-person.svg?color=%23666')}
+.signin form .ic-lock{content:url('https://api.iconify.design/streamline/interface-login-password-lock-login-padlock-password-secure-security-textbox-type.svg?color=%23666')}
+.g-recaptcha>div{margin:.5em auto}
+</style>
+<div class="signin">
+	<form v-on:submit.prevent="submit">
+		<div class="txt">
+			<i class="svg ic-logo"></i>
+			<h1>C Rank</h1>
+		</div>
+		<label>
+			<span>아이디</span>
+			<input name="a" autofocus v-model="id">
+			<i class="svg ic-person"></i>
+		</label>
+		<label>
+			<span>패스워드</span>
+			<input name="b" type="password" v-model="pw">
+			<i class="svg ic-lock"></i>
+		</label>
+		<div class="msg">{{message}}</div>
+		<div class="a">
+			<button type="submit">로그인</button>
+			<button class="signup btn" type="button" @click="signup">회원가입</button>
+		</div>
+	</form>
+</div>
+<script type="module">
+import {local,signal,ref} from '/env.mjs'
+
+const app=local.app
+const id=ref("")
+const pw=ref("")
+const message=ref("")
+
+signal.get("signin")({
+	setup(){
+		return {id,pw,message}
+	},
+	methods:{
+		async submit(){
+			if(!id.value||!pw.value){
+				return
+			}
+
+			message.value="로그인 .."
+
+			var {code}=await app.xpost("/signin",{
+				id:id.value,
+				pw:pw.value
+			})
+			if(code==200){
+				message.value="로딩중 .."
+				await app.mounted()
+			}else{
+				message.value="아이디와 비밀번호를 다시 확인해주세요."
+			}
+		},
+		signup(){
+			app.loadMain("signon")
+		}
+	}
+})
+</script>
