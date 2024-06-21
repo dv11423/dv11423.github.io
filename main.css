@@ -1,0 +1,96 @@
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:row}
+main{flex:auto}
+button{box-sizing:border-box;cursor:pointer}
+input{border:none;border-bottom:1px solid #ccc;box-sizing:border-box}
+:disabled{cursor:auto}
+
+.tbl1{min-width:100%;border:1px solid #ebebeb;border-radius:4px;white-space:nowrap}
+.tbl1 th{padding:0;height:1em}
+.tbl1 th button{padding:0 .3em 0 0;}
+.tbl1 td{padding:0 3px;height:2.5em;line-height:1.25}
+.tbl1 tbody tr:nth-child(odd){background:#f7f7f7}
+.tbl1 tbody tr:nth-child(even){background:#fff}
+.tbl1 button{padding:0;border:1px solid #666;border-radius:.3em;background:#efefef;font-size:1rem}
+.tbl1 button i{display:inline-block;padding:0 .5rem;width:1rem;height:1rem}
+.tbl1 input{min-height:100%;vertical-align:top}
+.tbl1 input:read-only{background:#eee}
+.tbl1 input[type=text]{padding:0 0 0 .5em;width:100%;font-size:1rem;background:none}
+.tbl1 input[type=number]{padding:0;width:4em;text-align:right;font-size:1rem}
+.tbl1 input:focus{outline:none}
+.tbl1 input:focus:not(:read-only){border-color:#00f}
+.tbl1 .no{padding:0}
+.tbl1 label.chk{display:flex;flex:2em 0 0;height:1.5em}
+.tbl1 label.chk input{margin:auto}
+.tbl1 .btns{display:flex;width:100%;height:100%}
+.tbl1 .btns button{display:flex;align-items:center;justify-content:center}
+
+.tbl1 col.num{min-width:2em}
+.tbl1 col.tier{min-width:4em}
+.tbl1 col.id{min-width:6em}
+.tbl1 col.memo{min-width:6em}
+.tbl1 col.stat{min-width:6em}
+.tbl1 col.name{min-width:4em}
+.tbl1 col.url{min-width:40em}
+.tbl1 col.kwd{min-width:10em}
+.tbl1 col.rnk{min-width:4em}
+.tbl1 col.begin,
+.tbl1 col.end{min-width:8em}
+.tbl1 col.begin2,
+.tbl1 col.end2{font-size:.8em}
+.tbl1 col.top{min-width:20em}
+
+.tbl1 col.time{min-width:8em}
+.tbl1 col.job{min-width:8em}
+
+.tbl1 col.ept{width:100%}
+.tbl1 td.txt8{font-size:.8em}
+.tbl1 td .top{display:flex}
+.tbl1 td .top span{flex:5em 0 0;overflow:hidden}
+
+.pagelst1{display:flex;height:2em}
+.pagelst1 input{text-align:right;min-width:2em}
+.pagelst1 button{min-width:2em}
+
+.dlg1{display:flex;flex-direction:column;padding:0;position:fixed;top:0;right:0;bottom:0;left:0;width:50%;height:50%;min-width:25em}
+.dlg1 p{display:flex;margin:0;line-height:1.5}
+.dlg1 form{margin:0;padding:.3em 0;background:#efefef;text-align:center}
+.dlg1 div{padding:.3em;flex:auto;background:#fff;overflow:auto}
+.dlg1 span:last-child{flex:auto;text-align:right}
+.dlg1 em{margin:0 .3em;padding:0 .3em;border-radius:.3em;color:#fff;font-style:normal}
+.dlg1 em.success{background:#39c}
+.dlg1 em.error{background:#f66}
+.dlg1 [type=number]{text-align:right}
+.dlg1 button::after{z-index:-1;content:"";position:fixed;top:0;right:0;bottom:0;left:0;background:#0007}
+
+.tier-adm::after{content:"어드민"}
+.tier-cmp::after{content:"본사"}
+.tier-mgr::after{content:"총판"}
+.tier-agy::after{content:"대행"}
+.tier-usr::after{content:"유저"}
+i.tier-adm{padding:.1em .5em;border-radius:.5em;color:#fff;background:#333;font-size:.8em;font-style:normal}
+i.tier-cmp{padding:.1em .5em;border-radius:.5em;color:#fff;background:#f35;font-size:.8em;font-style:normal}
+i.tier-mgr{padding:.1em .5em;border-radius:.5em;color:#fff;background:#f69;font-size:.8em;font-style:normal}
+i.tier-agy{padding:.1em .5em;border-radius:.5em;color:#fff;background:#69f;font-size:.8em;font-style:normal}
+i.tier-usr{padding:.1em .5em;border-radius:.5em;color:#fff;background:#3a5;font-size:.8em;font-style:normal}
+
+.cs0-5-40::after{content:"C(쿠폰)"}
+.cs0-30-120::after{content:"C(30일)"}
+
+.status .name{background:#fff;background:linear-gradient(145deg,#eee 33%,#fff 100%);color:#666}
+.run{background:#3a6;background:linear-gradient(145deg,#3a6 33%,#6da 100%)}
+.idle{background:#36c;background:linear-gradient(145deg,#36c 33%,#6ad 100%)}
+.stop{background:#c66;background:linear-gradient(145deg,#c66 33%,#f77 100%)}
+.blank{background:#aaa;background:linear-gradient(145deg,#aaa 33%,#ccc 100%)}
+.alert{color:#c66}
+
+.svg-cls{content:url('https://api.iconify.design/material-symbols/close.svg?color=%23555')}
+.svg-chk{content:url('https://api.iconify.design/noto-v1/check-mark.svg?color=%23555')}
+.svg-rr{content:url('https://api.iconify.design/ic/round-refresh.svg?color=%23555')}
+.svg-x{content:url('https://api.iconify.design/material-symbols/close-rounded.svg?color=%23555')}
+.svg-l{content:url('https://api.iconify.design/mdi/menu-left-outline.svg?color=%23555')}
+.svg-r{content:url('https://api.iconify.design/mdi/menu-right-outline.svg?color=%23555')}
+.svg-play{content:url('https://api.iconify.design/fluent/play-24-regular.svg?color=%23555')}
+.svg-stop{content:url('https://api.iconify.design/fluent/stop-24-regular.svg?color=%23555')}
+.svg-up{content:url('https://api.iconify.design/iconamoon/trend-up.svg?color=%23f36')}
+.svg-down{content:url('https://api.iconify.design/iconamoon/trend-down.svg?color=%2336f')}
