@@ -1,0 +1,112 @@
+<style>
+.rank{overflow:auto;height:100%}
+.rank .head{display:flex;height:2em;line-height:2em}
+.rank .head span{flex:auto}
+.rank .form{display:flex;height:2em}
+.rank .form input[type=date]{flex:auto}
+.rank .form button{width:3em}
+.rank table tr{height:2em}
+.rank table tbody{font-size:.8em}
+.rank table .time{min-width:6em}
+.rank .svg-up{content:url('https://api.iconify.design/iconamoon/trend-up.svg?color=%23f36')}
+.rank .svg-down{content:url('https://api.iconify.design/iconamoon/trend-down.svg?color=%2336f')}
+</style>
+<div class="rank">
+	<div class="head">
+		<span>{{txt}}</span>
+		<button @click="close"><i class="svg-x"></i></button>
+	</div>
+	<div class="form">
+		<input type="date" v-model="date">
+		<button @click="ud(-1)">-</button>
+		<button @click="ud(1)">+</button>
+	</div>
+	<table class="tbl1"><colgroup>
+		<col class="time">
+		<col class="rank">
+		<col class="diff">
+		<col class="last">
+	</colgroup><thead>
+		<tr>
+			<th class="time">측정시각</th>
+			<th class="rank">랭크</th>
+			<th class="diff">등락</th>
+			<th class="last">최종</th>
+		</tr>
+	</thead><tbody>
+		<tr v-for="a in list">
+			<td>{{a.time}}</td>
+			<td>{{a.rank}}</td>
+			<td>{{a.diff}} <i class="svg-up" v-if="a.diff>0"></i><i class="svg-down" v-if="a.diff<0"></i></td>
+			<td>{{a.last}} <i class="svg-up" v-if="a.last>0"></i><i class="svg-down" v-if="a.last<0"></i></td>
+		</tr>
+	</tbody></table>
+</div>
+<script type="module">
+import {local,signal,ref} from '/env.mjs'
+
+const app=local.app
+const id=ref(null)
+const date=ref(null)
+const list=ref([])
+
+signal.get("rank")({
+	setup(){
+		return {id,date,list}
+	},
+	methods:{
+		close(){
+			app.unload("rank")
+		},
+		async reload(){
+			var date2=date.value
+			var lst=[],rows2={},{rows}=await app.xpost("/ranks/list",{id:id.value,date:date2})
+
+			if(rows.length){
+				var first=rows[rows.length-1][1]
+				var diff=first
+				for(var i=rows.length-1;i>=0;i--){
+					var row=rows[i]
+					rows2[row[0]]={
+						rank:row[1],
+						diff:diff-row[1],
+						last:first-row[1]
+					}
+					diff=row[1]
+				}
+			}
+
+			var now=new Date(date2)
+			now.setMonth(now.getMonth()+1)
+			now.setDate(1)
+
+			for(var i=33;i>0;i--){
+				now.setDate(now.getDate()-1)
+				var time=now.toJSON().slice(0,10)
+				lst.push({
+					time,
+					...rows2[time]
+				})
+				if(now.getDate()==1){
+					break
+				}
+			}
+			list.value=lst
+		},
+		today(){
+			var now=new Date()
+			now.setMinutes(now.getMinutes()-now.getTimezoneOffset())
+			date.value=now.toJSON().slice(0,10)
+		},
+		ud(i){
+			var now=new Date(date.value)
+			now.setMonth(now.getMonth()+i)
+			date.value=now.toJSON().slice(0,10)
+			this.reload()
+		}
+	},
+	mounted(){
+
+	}
+})
+</script>
