@@ -1,1 +1,4 @@
-0EhHR3WtX6LbikC9Jop321qiKOMQNAR0LIB7vGkBra/B3/StE4IYZsIVWgWeydbk
+export * from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+export var siteurl="https://a.c-rank.online"
+export var local={}
+export var signal=new Map()
