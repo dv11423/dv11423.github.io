@@ -77,6 +77,16 @@ i.tier-usr{padding:.1em .5em;border-radius:.5em;color:#fff;background:#3a5;font-
 .cs0-5-40::after{content:"C(쿠폰)"}
 .cs0-30-120::after{content:"C(30일)"}
 
+.cs0-30-10::after{content:"cs0(10)"}
+.cs0-30-20::after{content:"cs0(20)"}
+.cs0-30-60::after{content:"cs0(60)"}
+.cs0-30-120::after{content:"cs0(120)"}
+
+.cs1-30-10::after{content:"cs1(10)"}
+.cs1-30-20::after{content:"cs1(20)"}
+.cs1-30-60::after{content:"cs1(60)"}
+.cs1-30-120::after{content:"cs1(120)"}
+
 .status .name{background:#fff;background:linear-gradient(145deg,#eee 33%,#fff 100%);color:#666}
 .run{background:#3a6;background:linear-gradient(145deg,#3a6 33%,#6da 100%)}
 .idle{background:#36c;background:linear-gradient(145deg,#36c 33%,#6ad 100%)}
